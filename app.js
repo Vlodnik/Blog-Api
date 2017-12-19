@@ -10,6 +10,7 @@ var users = require('./routes/users');
 
 var app = express();
 
+const blogPostsRouter = require('./routes/blogPostsRouter');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -41,6 +42,12 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+app.use('/blog-posts', blogPostsRouter);
+
+app.listen(process.env.PORT || 8080, () => {
+  console.log(`Your app is listening on port ${ process.env.PORT || 8080 }`);
 });
 
 module.exports = app;
