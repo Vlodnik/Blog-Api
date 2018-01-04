@@ -7,6 +7,8 @@ const should = chai.should();
 
 chai.use(chaiHttp);
 
+// it would be worth coming back to add tests for corner cases
+
 describe('Blog-API', function() {
 
   before(function() {
