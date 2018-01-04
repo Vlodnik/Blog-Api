@@ -29,10 +29,11 @@ router.post('/', (req, res) => {
     const {title, content, author, publishDate} = req.body;
     const post = BlogPosts.create(title, content, author, publishDate);
     res.status(201).json(post);
-    }
-  const {title, content, author} = req.body;
-  const post = BlogPosts.create(title, content, author);
-  res.status(201).json(post);
+  } else {
+    const {title, content, author} = req.body;
+    const post = BlogPosts.create(title, content, author);
+    res.status(201).json(post);
+  }
 });
 
 router.delete('/:id', (req, res) => {
