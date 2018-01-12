@@ -80,7 +80,7 @@ const blogPostSchema = mongoose.Schema({
     firstName: String,
     lastName: String
   },
-  created: {type: Date}
+  created: {type: Date, default: Date.now}
 });
 
 blogPostSchema.virtual('authorString').get(function() {

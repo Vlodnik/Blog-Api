@@ -14,6 +14,7 @@ const { Blogpost } = require('../models');
 //   are so many good ones! Pandemic Legacy is good?`, `Vlodnik`)
 
 router.get('/', (req, res) => {
+  console.log(Date.now())
   Blogpost
     .find()
     .then(Blogposts => res.json(
