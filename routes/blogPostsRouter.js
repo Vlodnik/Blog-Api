@@ -4,16 +4,36 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 
-const {BlogPosts} = require('../models');
+const { Blogpost } = require('../models');
 
-BlogPosts.create(`How great are socks?`, `Super great indeed! Socks 
-  are the best ever!`, `Vlodnik`, `9-21-2017`);
-BlogPosts.create(`Which boardgame is the best?`, `Who knows! There
-  are so many good ones! Pandemic Legacy is good?`, `Vlodnik`)
+// mongoose.Promise = global.Promise; // UNCOMMENT IF NECESSARY??????????
+
+// BlogPosts.create(`How great are socks?`, `Super great indeed! Socks 
+//   are the best ever!`, `Vlodnik`, `9-21-2017`);
+// BlogPosts.create(`Which boardgame is the best?`, `Who knows! There
+//   are so many good ones! Pandemic Legacy is good?`, `Vlodnik`)
 
 router.get('/', (req, res) => {
-  res.json(BlogPosts.get());
+  Blogpost
+    .find()
+    .then(Blogposts => res.json(
+      Blogposts.map(post => post.serialize())
+    ))
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ message: 'Internal server error' })
+    });
 });
+
+router.get('/:id', (req, res) => {
+  Blogpost
+    .findById(req.params.id)
+    .then(post => res.json(post.serialize()))
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ message: 'Internal server error' });
+    });
+}); 
 
 router.post('/', (req, res) => {
   const requiredFields = ['title', 'content', 'author'];
