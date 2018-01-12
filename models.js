@@ -73,7 +73,6 @@ const mongoose = require('mongoose');
 const uuid = require('uuid');
 
 const blogPostSchema = mongoose.Schema({
-  id: {type: String, required: true},
   title: {type: String, required: true},
   content: {type: String, required: true},
   author: {

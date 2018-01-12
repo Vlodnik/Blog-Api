@@ -33,23 +33,34 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
   const requiredFields = ['title', 'content', 'author'];
-  for (let i = 0; i < requiredFields.length; i++) { 
+  const requiredProps = ['firstName', 'lastName'];
+  for (let i = 0; i < requiredFields.length; i++) {
     const field = requiredFields[i];
     if (!(field in req.body)) {
       const message = `Missing required field '${ field }' in request body`;
-      console.error(message);
+      console.log(message);
       return res.status(400).send(message);
     }
   }
-  if (req.body.publishDate) {
-    const {title, content, author, publishDate} = req.body;
-    const post = BlogPosts.create(title, content, author, publishDate);
-    res.status(201).json(post);
-  } else {
-    const {title, content, author} = req.body;
-    const post = BlogPosts.create(title, content, author);
-    res.status(201).json(post);
+  for (let i = 0; i < requiredProps.length; i++) {
+    const prop = requiredProps[i];
+    if (!(prop in req.body.author)) {
+      const message = `Missing required author property '${ prop }' in request body`;
+      console.log(message);
+      return res.status(400).send(message);
+    }
   }
+  Blogpost
+    .create({
+      title: req.body.title,
+      content: req.body.content,
+      author: req.body.author
+    })
+    .then(post => res.status(201).json(post.serialize()))
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ message: 'Internal server error' });
+    });
 });
 
 router.delete('/:id', (req, res) => {
