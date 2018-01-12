@@ -8,11 +8,6 @@ const { Blogpost } = require('../models');
 
 // mongoose.Promise = global.Promise; // UNCOMMENT IF NECESSARY??????????
 
-// BlogPosts.create(`How great are socks?`, `Super great indeed! Socks 
-//   are the best ever!`, `Vlodnik`, `9-21-2017`);
-// BlogPosts.create(`Which boardgame is the best?`, `Who knows! There
-//   are so many good ones! Pandemic Legacy is good?`, `Vlodnik`)
-
 router.get('/', (req, res) => {
   console.log(Date.now())
   Blogpost
