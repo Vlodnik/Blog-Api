@@ -66,9 +66,13 @@ router.post('/', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-  BlogPosts.delete(req.params.id);
-  console.log(`Deleted blog post '${ req.params.id }'`);
-  res.status(204).end();
+  Blogpost
+    .findByIdAndRemove(req.params.id)
+    .then(() => res.status(204).json({message: `Post ${ req.params.id } deleted`}))
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ message: 'Internal server error' });
+    });
 });
 
 router.put('/:id', (req, res) => {
