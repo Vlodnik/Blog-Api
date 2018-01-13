@@ -29,46 +29,70 @@ describe('Blog-API', function() {
       });
   });
   
+  let testPostId;
+
   it('should add an item on POST', function() { 
-    const newPost = {title: 'Test', content: 'Test', author: 'Cher'};
+    const newPost = {
+      title: 'Test', 
+      content: 'Test', 
+      author: {
+        firstName: 'Cher',
+        lastName: 'Cher'
+      }
+    };
+
+    const expected = {
+      title: 'Test',
+      content: 'Test',
+      author: 'Cher Cher'
+    }
 
     return chai.request(app)
       .post('/posts')
       .send(newPost)
       .then(function(res) {
         res.should.be.json;
-        res.body.should.include.keys('id', 'title', 'content', 'author', 'publishDate');
-        res.body.id.should.not.be.null;
-        res.body.publishDate.should.not.be.null;
-        res.body.should.deep.equal(Object.assign(newPost, {id: res.body.id, publishDate: res.body.publishDate}));
+        res.body.should.include.keys('title', 'content', 'author', 'created');
+        res.body.created.should.not.be.null;
+        res.body.should.deep.equal(Object.assign(expected, {created: res.body.created, id: res.body.id}));
         res.should.have.status(201);
+        // set testPostId equal to our new posts id so we can 
+        // modify and delete the same post with our PUT and
+        // DELETE tests, thus preserving the state of our db
+        testPostId = res.body.id;
       });
   });
 
   it('should update items on PUT', function() {
-    const updateData = {title: 'foo', content: 'bar', author: 'me', publishDate: '1-1-2018'};
+    const updateData = {
+      id: testPostId,
+      title: 'foo', 
+      content: 'bar', 
+      author: {
+        firstName: 'my',
+        lastName: 'test'
+      }
+    };
+
+    const expected = {
+      id: testPostId,
+      title: 'foo',
+      content: 'bar',
+      author: 'my test'
+    }
 
     return chai.request(app)
-      .get('/posts')
+      .put(`/posts/${ testPostId }`)
+      .send(updateData)
       .then(function(res) {
-        updateData.id = res.body[0].id;
-
-        return chai.request(app)
-          .put(`/posts/${ updateData.id }`)
-          .send(updateData)
-      })
-      .then(function(res) {
-        res.should.have.status(204);
+        res.should.have.status(200);
+        res.body.should.deep.equal(Object.assign(expected, {created: res.body.created}));
       });
   });
 
   it('should delete items on DELETE', function() {
     return chai.request(app)
-      .get('/posts')
-      .then(function(res) {
-        return chai.request(app)
-          .delete(`/posts/${ res.body[0].id }`)
-      })
+      .delete(`/posts/${ testPostId }`)
       .then(function(res) {
         res.should.have.status(204);
       });
