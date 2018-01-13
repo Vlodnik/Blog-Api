@@ -1,3 +1,5 @@
+'use strict';
+
 const express = require('express');
 const router = express.Router();
 
@@ -70,29 +72,27 @@ router.delete('/:id', (req, res) => {
 });
 
 router.put('/:id', (req, res) => {
-  const requiredFields = ['id', 'title', 'content', 'author', 'publishDate'];
-  for (let i = 0; i < requiredFields.length; i++) {
-    const field = requiredFields[i];
-    if (!(field in req.body)) {
-      const message = `Missing required field '${ field }' in request body`;
-      console.error(message);
-      return res.status(400).send(message);
-    }
-  }
   if (req.params.id !== req.body.id) {
-    const message = `Request path id (${ req.params.id }) and request body id (${ req.body.id }) must match`;
+    const message = `Request path id '${ req.params.id }' and request body id '${ req.body.id }' must match`;
     console.error(message);
     return res.status(400).send(message);
   }
-  console.log(`Updating blog post '${ req.params.id }'`);
-  const updatedPost = BlogPosts.update({
-    id: req.params.id,
-    title: req.body.title,
-    content: req.body.content,
-    author: req.body.author,
-    publishDate: req.body.publishDate
-  });
-  res.status(204).end();
+  console.log(`Updating blogpost '${ req.params.id }'`);
+  const updateFields = ['title', 'content', 'author']
+  const updateData = {};
+  for (let i = 0; i < updateFields.length; i++) {
+    const field = updateFields[i];
+    if (updateFields[i] in req.body) {
+      updateData[field] = req.body[field];
+    }
+  }
+  Blogpost
+    .findByIdAndUpdate(req.params.id, updateData, {new: true})
+    .then(post => res.json(post.serialize()))
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ message: 'Internal server error' })
+    });
 });
 
 module.exports = router;
